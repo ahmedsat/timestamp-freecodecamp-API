@@ -31,6 +31,8 @@ app.get("/api/hello", function (req, res) {
 app.get("/api/:date?", (req, res) => {
   const reqDate = req.params.date;
 
+  console.log(reqDate);
+
   // convert requested date to A Date object
   const date = new Date(
     reqDate === undefined ? Date.now() : isNaN(reqDate) ? reqDate : reqDate * 1
@@ -39,21 +41,40 @@ app.get("/api/:date?", (req, res) => {
   // return error if Invalid Date
   if (date == "Invalid Date") return res.json({ error: "Invalid Date" });
 
+  // unix Date
   const unix = date.getTime();
-  let utc = "";
 
-  const weekday = date.toLocaleDateString("GMT", {
-    weekday: "short",
-  });
+  // remove milliseconds from date
+  const dateWithoutMilliseconds = date.toString().split("+")[0];
 
-  const day = date.getDate();
+  // date as Array
+  const dateArray = dateWithoutMilliseconds.split(" ");
 
-  const monthName = date.toLocaleDateString("en-us", { month: "short" });
+  // add `,` after day name
+  dateArray[0] += ",";
 
-  const year = date.getFullYear();
+  // swap day and month
+  const temp = dateArray[1];
+  dateArray[1] = dateArray[2];
+  dateArray[2] = temp;
 
-  const time = date.toTimeString().split("+")[0];
-  utc = `${weekday}, ${day} ${monthName} ${year} ${time}`;
+  // join dateArray in utc variable
+  const utc = dateArray.join(" ");
+  console.log(utc);
+
+  // const weekday = date.toLocaleDateString("GMT", {
+  //   weekday: "short",
+  // });
+
+  // const day = date.toString();
+  // console.log(day);
+
+  // const monthName = date.toLocaleDateString("en-us", { month: "short" });
+
+  // const year = date.getFullYear();
+
+  // const time = date.toTimeString().split("+")[0];
+  // utc = `${weekday}, ${day} ${monthName} ${year} ${time}`;
 
   res.json({
     unix,
